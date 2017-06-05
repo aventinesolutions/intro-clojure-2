@@ -233,10 +233,26 @@
   (go-to :prep-area)
   (doseq [[ingredient amount] shopping-list]
     (unload-amount ingredient amount)))
+
+(defn day-at-the-bakery []
+  (doseq [order (get-morning-orders)]
+    (dotimes [n (:cake (:items order) 0)]
+      (fetch-list {:egg 2
+                   :flour 2
+                   :milk 1
+                   :sugar 1})
+      (delivery {:orderid (:orderid order)
+                 :address (:address order)
+                 :rackids [(bake-cake)]}))
+    (dotimes [n (:coodies (:items order) 0)]
+      (fetch-list {:egg 1
+                   :flour 1
+                   :butter 1
+                   :sugar 1})
+      (delivery {:orderid (:orderid order)
+                 :address (:address order)
+                 :rackids [(bake-cookies)]}))))
               
 (defn -main []
-  (bake-cake)
-  (bake-cookies)
-  (fetch-from-pantry :flour 45)
-  (fetch-from-fridge :milk 10)
+  (day-at-the-bakery)
   (status))
