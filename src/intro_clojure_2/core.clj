@@ -215,6 +215,9 @@
      :else
      (error "This function only works on ingredients found in either the pantry or the fridge.  You asked me to fetch" ingredient))))
 
+(defn add-ingredients [a b]
+  (merge-with + a b))
+
 (defn load-up-amount [ingredient amount]
   (dotimes [i amount]
     (load-up ingredient)))
