@@ -214,6 +214,14 @@
      (fetch-from-pantry ingredient amount)
      :else
      (error "This function only works on ingredients found in either the pantry or the fridge.  You asked me to fetch" ingredient))))
+
+(defn load-up-amount [ingredient amount]
+  (dotimes [i amount]
+    (load-up ingredient)))
+
+(defn unload-amount [ingredient amount]
+  (dotimes [i amount]
+    (unload ingredient)))
          
 (defn fetch-list [shopping-list]
   (goto :pantry)
