@@ -150,6 +150,74 @@
   (bake-pan 30)
   (cool-pan))
 
+(def fridge-ingredients #{:milk :egg :butter})
+
+(defn from-fridge? [ingredient]
+  (contains? fridge-ingredients ingredient))
+
+(def pantry-ingredients #{:flour :sugar})
+
+(defn from-pantry? [ingredient]
+  (contains? pantry-ingredients ingredient))
+
+(def scooped-ingredients #{:flour :sugar :milk})
+
+(defn scooped? [ingredient]
+  (contains? scooped-ingredients ingredient))
+
+(def squeezed-ingredients #{:egg})
+
+(defn squeezed? [ingredient]
+  (contains? squeezed-ingredients ingredient))
+
+(def simple-ingredients #{:butter})
+
+(defn simple? [ingredient]
+  (contains? simple-ingredients ingredient))
+
+(defn fetch-from-pantry
+  ([ingredient]
+   (fetch-from-pantry ingredient 1))
+  ([ingredient amount]
+   (if (from-pantry? ingredient)
+     (do
+       (go-to :pantry)
+       (dotimes [i amount]
+         (load-up ingredient))
+       (go-to :prep-area)
+       (dotimes [i amount]
+         (unload ingredient)))
+     (error "This function only works on ingredients that are stored in the pantry. You asked me to fetch" ingredient))))
+         
+(defn fetch-from-fridge
+  ([ingredient]
+   (fetch-from-fridge ingredient 1))
+  ([ingredient amount]
+   (if (from-fridge? ingredient)
+     (do
+       (go-to :fridge)
+       (dotimes [i amount]
+         (load-up ingredient))
+       (go-to :prep-area)
+       (dotimes [i amount]
+         (unload ingredient)))
+     (error "This function only works on ingredients that are stored in the fridge. You asked me to fetch" ingredient))))
+
+(defn fetch-ingredient
+  ([ingredient]
+   (fetch-ingredient ingredient 1))
+  ([ingredient amount]
+   (cond
+     (from-fridge? ingredient)
+     (fetch-from-fridge ingredient amount)
+     (from-pantry? ingredient)
+     (fetch-from-pantry ingredient amount)
+     :else
+     (error "This function only works on ingredients found in either the pantry or the fridge.  You asked me to fetch" ingredient))))
+         
 (defn -main []
   (bake-cake)
-  (bake-cookies))
+  (bake-cookies)
+  (fetch-from-pantry :flour 45)
+  (fetch-from-fridge :milk 10)
+  (status))
