@@ -214,7 +214,32 @@
      (fetch-from-pantry ingredient amount)
      :else
      (error "This function only works on ingredients found in either the pantry or the fridge.  You asked me to fetch" ingredient))))
+
+(defn load-up-amount [ingredient amount]
+  (dotimes [i amount]
+    (load-up ingredient)))
+
+(defn unload-amount [ingredient amount]
+  (dotimes [i amount]
+    (unload ingredient)))
          
+(defn fetch-list [shopping-list]
+  (go-to :pantry)
+  (load-up-amount :flour (:flour shopping-list 0))
+  (load-up-amount :sugar (:suguar shopping-list 0))
+
+  (go-to :fridge)
+  (load-up-amount :butter (:butter shopping-list 0))
+  (load-up-amount :egg (:egg shopping-list 0))
+  (load-up-amount :milk (:milk shopping-list 0))
+
+  (go-to :prep-area)
+  (unload-amount :flour (:flour shopping-list 0))
+  (unload-amount :sugar (:sugar shopping-list 0))
+  (unload-amount :milk (:milk shopping-list 0))
+  (unload-amount :egg (:egg shopping-list 0))
+  (unload-amount :butter (:butter shopping-list 0)))
+              
 (defn -main []
   (bake-cake)
   (bake-cookies)
