@@ -223,6 +223,17 @@
         (for [[ingredient amount] ingredients]
           [ingredient (* amount n)])))
 
+(defn order->ingredients [order]
+  (add-ingredients
+   (multiply-ingredients (:cake (:items order) 0) {:egg 2
+                                                   :flour 2
+                                                   :sugar 1
+                                                   :milk 1})
+   (multiply-ingredients (:cookies (:items order) 0) {:egg 1
+                                                      :flour 1
+                                                      :sugar 1
+                                                      :butter 1})))
+
 (defn load-up-amount [ingredient amount]
   (dotimes [i amount]
     (load-up ingredient)))
