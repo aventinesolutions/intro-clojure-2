@@ -255,20 +255,28 @@
   (doseq [[ingredient amount] shopping-list]
     (unload-amount ingredient amount)))
 
+(defn bake [item]
+  (cond
+    (= :cake item)
+    (bake-cake)
+    (= :cookies item)
+    (bake-cookies)
+    :else
+    (error "I don't know how to bake" item)))
+
 (defn day-at-the-bakery []
   (let [orders (get-morning-orders)
         ingredient-list (orders->ingredients orders)]
     (fetch-list ingredient-list)
     (doseq [order orders]
-      (dotimes [n (:cake (:items order) 0)]
-        (delivery {:orderid (:orderid order)
-                   :address (:address order)
-                   :rackids [(bake-cake)]}))
-      (dotimes [n (:coodies (:items order) 0)]
-        (delivery {:orderid (:orderid order)
-                   :address (:address order)
-                   :rackids [(bake-cookies)]})))))
+      (let [items (:items order)
+            racks (for [[item amount] items
+                        i (range amount)]
+                    (bake item))
+            receipt {:orderid (:orderid order)
+                     :address (:address order)
+                     :rackids racks}]
+        (delivery receipt)))))
               
 (defn -main []
-  (day-at-the-bakery)
-  (status))
+  (day-at-the-bakery)(status))
