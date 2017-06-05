@@ -215,6 +215,25 @@
      :else
      (error "This function only works on ingredients found in either the pantry or the fridge.  You asked me to fetch" ingredient))))
 
+(defn add-ingredients [a b]
+  (merge-with + a b))
+
+(defn multiply-ingredients [n ingredients]
+  (into {}
+        (for [[ingredient amount] ingredients]
+          [ingredient (* amount n)])))
+
+(defn order->ingredients [order]
+  (add-ingredients
+   (multiply-ingredients (:cake (:items order) 0) {:egg 2
+                                                   :flour 2
+                                                   :sugar 1
+                                                   :milk 1})
+   (multiply-ingredients (:cookies (:items order) 0) {:egg 1
+                                                      :flour 1
+                                                      :sugar 1
+                                                      :butter 1})))
+
 (defn load-up-amount [ingredient amount]
   (dotimes [i amount]
     (load-up ingredient)))
