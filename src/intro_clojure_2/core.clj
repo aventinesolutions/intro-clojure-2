@@ -215,6 +215,44 @@
      :else
      (error "This function only works on ingredients found in either the pantry or the fridge.  You asked me to fetch" ingredient))))
          
+(defn fetch-list [shopping-list]
+  (goto :pantry)
+  (when (contains? shopping-list :flour)
+    (dotimes [i (get shopping-list :flour)]
+      (load-up :flour)))
+  (when (contains? shopping-list :sugar)
+    (dotimes [i (get shopping-list :sugar)]
+      (load-up :sugar)))
+
+  (goto :fridge)
+  (when (contains? shopping-list :butter)
+    (dotimes [i (get shopping-list :butter)]
+      (load-up :butter)))
+  (when (contains? shopping-list :egg)
+    (dotimes [i (get shopping-list :egg)]
+      (load-up :egg)))
+  (when (contains? shopping-list :milk)
+    (dotimes [i (get shopping-list :milk)]
+      (load-up :milk)))
+
+  (goto :prep-area)
+  (when (contains? shopping-list :flour)
+    (dotimes [i (get shopping-list :flour)]
+      (unload :flour)))
+  (when (contains? shopping-list :sugar)
+    (dotimes [i (get shopping-list :sugar)]
+      (unload :sugar)))
+  (when (contains? shopping-list :milk)
+    (dotimes [i (get shopping-list :milk)]
+      (unload :milk)))
+  (when (contains? shopping-list :eggs)
+    (dotimes [i (get shopping-list :eggs)]
+      (unload :eggs)))
+  (when (contains? shopping-list :butter)
+    (dotimes [i (get shopping-list :butter)]
+      (unload :butter))))
+  
+              
 (defn -main []
   (bake-cake)
   (bake-cookies)
