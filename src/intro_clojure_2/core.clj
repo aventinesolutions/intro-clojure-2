@@ -218,6 +218,11 @@
 (defn add-ingredients [a b]
   (merge-with + a b))
 
+(defn multiply-ingredients [n ingredients]
+  (into {}
+        (for [[ingredient amount] ingredients]
+          [ingredient (* amount n)])))
+
 (defn load-up-amount [ingredient amount]
   (dotimes [i amount]
     (load-up ingredient)))
