@@ -224,19 +224,15 @@
     (unload ingredient)))
          
 (defn fetch-list [shopping-list]
-  (go-to :pantry)
-  (doseq [ingredient pantry-ingredients]
-    (load-up-amount ingredient (ingredient shopping-list 0)))
-
-  (go-to :fridge)
-  (doseq [ingredient fridge-ingredients]
-    (load-up-amount ingredient (ingredient shopping-list 0)))
+  (doseq [[location ingredients] {:pantry pantry-ingredients
+                                  :fridge fridge-ingredients}]
+    (go-to location)
+    (doseq [ingredient ingredients]
+      (load-up-amount ingredient (ingredient shopping-list 0))))
 
   (go-to :prep-area)
-  (doseq [ingredient pantry-ingredients]
-    (unload-amount ingredient (ingredient shopping-list 0)))
-  (doseq [ingredient fridge-ingredients]
-    (unload-amount ingredient (ingredient shopping-list 0))))
+  (doseq [[ingredient amount] shopping-list]
+    (unload-amount ingredient amount)))
               
 (defn -main []
   (bake-cake)
