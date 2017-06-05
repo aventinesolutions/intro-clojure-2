@@ -233,6 +233,8 @@
                                                       :flour 1
                                                       :sugar 1
                                                       :butter 1})))
+(defn orders->ingredients [orders]
+  (reduce add-ingredients (map order->ingredients orders)))
 
 (defn load-up-amount [ingredient amount]
   (dotimes [i amount]
