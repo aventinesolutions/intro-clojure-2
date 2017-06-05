@@ -224,42 +224,31 @@
     (unload ingredient)))
          
 (defn fetch-list [shopping-list]
-  (goto :pantry)
+  (go-to :pantry)
   (when (contains? shopping-list :flour)
-    (dotimes [i (get shopping-list :flour)]
-      (load-up :flour)))
+    (load-up-amount :flour (get shopping-list :flour)))
   (when (contains? shopping-list :sugar)
-    (dotimes [i (get shopping-list :sugar)]
-      (load-up :sugar)))
+    (load-up-amount :sugar (get shopping-list :sugar)))
 
-  (goto :fridge)
+  (go-to :fridge)
   (when (contains? shopping-list :butter)
-    (dotimes [i (get shopping-list :butter)]
-      (load-up :butter)))
+    (load-up-amount :butter (get shopping-list :butter)))
   (when (contains? shopping-list :egg)
-    (dotimes [i (get shopping-list :egg)]
-      (load-up :egg)))
+    (load-up-amount :egg (get shopping-list :egg)))
   (when (contains? shopping-list :milk)
-    (dotimes [i (get shopping-list :milk)]
-      (load-up :milk)))
+    (load-up-amount :milk (get shopping-list :milk)))
 
-  (goto :prep-area)
+  (go-to :prep-area)
   (when (contains? shopping-list :flour)
-    (dotimes [i (get shopping-list :flour)]
-      (unload :flour)))
+    (unload-amount :flour (get shopping-list :flour)))
   (when (contains? shopping-list :sugar)
-    (dotimes [i (get shopping-list :sugar)]
-      (unload :sugar)))
+    (unload-amount :sugar (get shopping-list :sugar)))
   (when (contains? shopping-list :milk)
-    (dotimes [i (get shopping-list :milk)]
-      (unload :milk)))
-  (when (contains? shopping-list :eggs)
-    (dotimes [i (get shopping-list :eggs)]
-      (unload :eggs)))
+    (unload-amount :milk (get shopping-list :milk)))
+  (when (contains? shopping-list :egg)
+    (unload-amount :egg (get shopping-list :egg)))
   (when (contains? shopping-list :butter)
-    (dotimes [i (get shopping-list :butter)]
-      (unload :butter))))
-  
+    (unload-amount :butter (get shopping-list :butter))))
               
 (defn -main []
   (bake-cake)
