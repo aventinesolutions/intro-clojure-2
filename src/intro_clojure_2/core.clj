@@ -256,23 +256,18 @@
     (unload-amount ingredient amount)))
 
 (defn day-at-the-bakery []
-  (doseq [order (get-morning-orders)]
-    (dotimes [n (:cake (:items order) 0)]
-      (fetch-list {:egg 2
-                   :flour 2
-                   :milk 1
-                   :sugar 1})
-      (delivery {:orderid (:orderid order)
-                 :address (:address order)
-                 :rackids [(bake-cake)]}))
-    (dotimes [n (:coodies (:items order) 0)]
-      (fetch-list {:egg 1
-                   :flour 1
-                   :butter 1
-                   :sugar 1})
-      (delivery {:orderid (:orderid order)
-                 :address (:address order)
-                 :rackids [(bake-cookies)]}))))
+  (let [orders (get-morning-orders)
+        ingredient-list (orders->ingredients orders)]
+    (fetch-list ingredient-list)
+    (doseq [order orders]
+      (dotimes [n (:cake (:items order) 0)]
+        (delivery {:orderid (:orderid order)
+                   :address (:address order)
+                   :rackids [(bake-cake)]}))
+      (dotimes [n (:coodies (:items order) 0)]
+        (delivery {:orderid (:orderid order)
+                   :address (:address order)
+                   :rackids [(bake-cookies)]})))))
               
 (defn -main []
   (day-at-the-bakery)
