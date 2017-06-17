@@ -89,8 +89,11 @@
       )))
 
 (defn perform [step]
-  (when (= :cool (first step))
-    (cool-pan)))
+  (cond
+    (= :cool (first step))
+    (cool-pan)
+    (= :mix (first step))
+    (mix)))
 
 (defn bake-cake []
   (add :egg 2)
