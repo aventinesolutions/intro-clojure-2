@@ -107,12 +107,12 @@
 (defn from-fridge? [ingredient]
   (contains? fridge-ingredients ingredient))
 
-(def pantry-ingredients #{:flour :sugar})
+(def pantry-ingredients #{:flour :sugar :cocoa})
 
 (defn from-pantry? [ingredient]
   (contains? pantry-ingredients ingredient))
 
-(def scooped-ingredients #{:flour :sugar :milk})
+(def scooped-ingredients #{:flour :sugar :milk :cocoa})
 
 (defn scooped? [ingredient]
   (contains? scooped-ingredients ingredient))
