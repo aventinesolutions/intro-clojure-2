@@ -88,6 +88,10 @@
       (error "I do not have the ingredient" ingredient)
       )))
 
+(defn perform [step]
+  (when (= :cool (first step))
+    (cool-pan)))
+
 (defn bake-cake []
   (add :egg 2)
   (add :flour 2)
