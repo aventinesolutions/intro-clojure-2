@@ -5,33 +5,6 @@
   (apply println [args])
   :error)
 
-(defn add-egg []
-  (grab :egg)
-  (squeeze)
-  (add-to-bowl))
-
-(defn add-sugar []
-  (grab :cup)
-  (scoop :sugar)
-  (add-to-bowl)
-  (release))
-
-(defn add-flour []
-  (grab :cup)
-  (scoop :flour)
-  (add-to-bowl)
-  (release))
-
-(defn add-milk []
-  (grab :cup)
-  (scoop :milk)
-  (add-to-bowl)
-  (release))
-
-(defn add-butter []
-  (grab :butter)
-  (add-to-bowl))
-
 (defn scooped? [ingredient]
   (cond
    (= ingredient :milk)
@@ -48,27 +21,6 @@
 
 (defn simple? [ingredient]
   (= ingredient :butter))
-
-
-(defn add-eggs [n]
-  (dotimes [e n]
-    (add-egg)))
-
-(defn add-flour-cups [n]
-  (dotimes [e n]
-    (add-flour)))
-
-(defn add-milk-cups [n]
-  (dotimes [e n]
-    (add-milk)))
-
-(defn add-sugar-cups [n]
-  (dotimes [e n]
-    (add-sugar)))
-
-(defn add-butters [n]
-  (dotimes [e n]
-    (add-butter)))
 
 (defn add-squeezed
   ([ingredient]
@@ -150,17 +102,34 @@
   (bake-pan 30)
   (cool-pan))
 
+(defn bake-brownies []
+  (add :butter 2)
+  (add :sugar 1)
+  (add :cocoa 2)
+
+  (mix)
+
+  (add :egg 2)
+  (add :flour 2)
+  (add :milk 1)
+
+  (mix)
+
+  (pour-into-pan)
+  (bake-pan 35)
+  (cool-pan))
+
 (def fridge-ingredients #{:milk :egg :butter})
 
 (defn from-fridge? [ingredient]
   (contains? fridge-ingredients ingredient))
 
-(def pantry-ingredients #{:flour :sugar})
+(def pantry-ingredients #{:flour :sugar :cocoa})
 
 (defn from-pantry? [ingredient]
   (contains? pantry-ingredients ingredient))
 
-(def scooped-ingredients #{:flour :sugar :milk})
+(def scooped-ingredients #{:flour :sugar :milk :cocoa})
 
 (defn scooped? [ingredient]
   (contains? scooped-ingredients ingredient))
@@ -232,7 +201,14 @@
    (multiply-ingredients (:cookies (:items order) 0) {:egg 1
                                                       :flour 1
                                                       :sugar 1
-                                                      :butter 1})))
+                                                      :butter 1})
+   (multiply-ingredients (:brownies (:items order) 0) {:egg 2
+                                                       :flour 2
+                                                       :cocoa 2
+                                                       :sugar 1
+                                                       :butter 2
+                                                       :milk 1})))
+
 (defn orders->ingredients [orders]
   (reduce add-ingredients (map order->ingredients orders)))
 
@@ -261,6 +237,8 @@
     (bake-cake)
     (= :cookies item)
     (bake-cookies)
+    (= :brownies item)
+    (bake-brownies)
     :else
     (error "I don't know how to bake" item)))
 
