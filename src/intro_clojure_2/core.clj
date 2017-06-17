@@ -102,6 +102,23 @@
   (bake-pan 30)
   (cool-pan))
 
+(defn bake-brownies []
+  (add :butter 2)
+  (add :sugar 1)
+  (add :cocoa 2)
+
+  (mix)
+
+  (add :egg 2)
+  (add :flour 2)
+  (add :milk 1)
+
+  (mix)
+
+  (pour-into-pan)
+  (bake-pan 35)
+  (cool-pan))
+
 (def fridge-ingredients #{:milk :egg :butter})
 
 (defn from-fridge? [ingredient]
@@ -184,7 +201,14 @@
    (multiply-ingredients (:cookies (:items order) 0) {:egg 1
                                                       :flour 1
                                                       :sugar 1
-                                                      :butter 1})))
+                                                      :butter 1})
+   (multiply-ingredients (:brownies (:items order) 0) {:egg 2
+                                                       :flour 2
+                                                       :cocoa 2
+                                                       :sugar 1
+                                                       :butter 2
+                                                       :milk 1})))
+
 (defn orders->ingredients [orders]
   (reduce add-ingredients (map order->ingredients orders)))
 
@@ -213,6 +237,8 @@
     (bake-cake)
     (= :cookies item)
     (bake-cookies)
+    (= :brownies item)
+    (bake-brownies)
     :else
     (error "I don't know how to bake" item)))
 
