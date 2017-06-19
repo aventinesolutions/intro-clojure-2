@@ -271,15 +271,7 @@
     (unload-amount ingredient amount)))
 
 (defn bake [item]
-  (cond
-    (= :cake item)
-    (bake-cake)
-    (= :cookies item)
-    (bake-cookies)
-    (= :brownies item)
-    (bake-brownies)
-    :else
-    (error "I don't know how to bake" item)))
+  (bake-recipe ((:recipes baking) item)))
 
 (defn day-at-the-bakery []
   (let [orders (get-morning-orders)
@@ -296,4 +288,4 @@
         (delivery receipt)))))
               
 (defn -main []
-  (day-at-the-bakery)(status))
+  (println (bake :cake)))
