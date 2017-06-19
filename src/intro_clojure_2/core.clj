@@ -113,8 +113,9 @@
     (error "I do not know how to" (first step))))
 
 (defn bake-recipe [recipe]
-  (doseq [step (:steps recipe)]
-    (perform recipe step)))
+  (last
+   (for [step (:steps recipe)]
+     (perform recipe step))))
 
 (defn bake-cake []
   (add :egg 2)
