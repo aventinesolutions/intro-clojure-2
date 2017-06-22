@@ -53,21 +53,13 @@
   :error)
 
 (defn scooped? [ingredient]
-  (cond
-   (= ingredient :milk)
-   true
-   (= ingredient :flour)
-   true
-   (= ingredient :sugar)
-   true
-   :else
-   false))
+  (= :scooped (:usage (ingredient (:ingredients baking)))))
 
 (defn squeezed? [ingredient]
-  (= ingredient :egg))
+  (= :squeezed (:usage (ingredient (:ingredients baking)))))
 
 (defn simple? [ingredient]
-  (= ingredient :butter))
+  (= :simple (:usage (ingredient (:ingredients baking)))))
 
 (defn add-squeezed
   ([ingredient]
