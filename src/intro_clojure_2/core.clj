@@ -48,6 +48,22 @@
                            :cocoa {:storage :pantry
                                    :usage :scooped}}})
 
+(def usage {:squeezed (fn [ingredient amount]
+                        (dotimes [i amount]
+                          (grab ingredient)
+                          (squeeze)
+                          (add-to-bowl)))
+            :simple (fn [ingredient amount]
+                      (dotimes [i amount]
+                        (grab ingredient)
+                        (add-to-bowl)))
+            :scooped (fn [ingredient amount]
+                       (grab :cup)
+                       (dotimes [i amount]
+                         (scoop ingredient)
+                         (add-to-bowl))
+                       (release))})
+
 (defn error [& args]
   (apply println [args])
   :error)
