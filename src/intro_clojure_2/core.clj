@@ -96,28 +96,8 @@
                       (cool-pan))})
 
 (defn perform [recipe step]
-  (cond
-    (= :cool (first step))
-    (cool-pan)
-    (= :mix (first step))
-    (mix)
-    (= :pour (first step))
-    (pour-into-pan)
-    (= :bake (first step))
-    (bake-pan (second step))
-    (= :add (first step))
-    (cond
-      (= [:all] (rest step))
-      (doseq [[ingredient amount] (:ingredients recipe)]
-        (add ingredient amount))
-      (= 2 (count (rest step)))
-      (apply add (rest step))
-      (contains? (:ingredients recipe) (second step))
-      (add (second step) ((:ingredients recipe) (second step)))
-      :else
-      (error "This recipe does not call for" (first step)))
-    :else
-    (error "I do not know how to" (first step))))
+  (let [f (actions (first step))]
+    (apply f recipe (rest step))))
 
 (defn bake-recipe [recipe]
   (last
