@@ -9,7 +9,32 @@
                                       [:mix]
                                       [:pour]
                                       [:bake 25]
-                                      [:cool]]}}})
+                                      [:cool]]}
+                       :cookies {:ingredients {:egg 1
+                                               :flour 1
+                                               :butter 1
+                                               :sugar 1}
+                                 :steps [[:add :all]
+                                         [:mix]
+                                         [:pour]
+                                         [:bake 30]
+                                         [:cool]]}
+                       :brownies {:ingredients {:egg 2
+                                               :flour 2
+                                               :butter 2
+                                               :cocoa 2
+                                               :sugar 1
+                                               :milk 1}
+                                  :steps [[:add :butter]
+                                          [:add :cocoa]
+                                          [:add :sugar]
+                                          [:mix]
+                                          [:add :egg]
+                                          [:add :flour]
+                                          [:add :milk]
+                                          [:mix]
+                                          [:pour]
+                                          [:cool]]}}})
 
 (defn error [& args]
   (apply println [args])
@@ -288,4 +313,4 @@
         (delivery receipt)))))
               
 (defn -main []
-  (println (bake :cake)))
+  (day-at-the-bakery))
