@@ -1,133 +1,108 @@
 (ns intro-clojure-2.core
   [:use bakery.core])
 
+(def baking {:recipes {:cake {:ingredients {:egg 2
+                                            :flour 2
+                                            :sugar 1
+                                            :milk 1}
+                              :steps [[:add :all]
+                                      [:mix]
+                                      [:pour]
+                                      [:bake 25]
+                                      [:cool]]}
+                       :cookies {:ingredients {:egg 1
+                                               :flour 1
+                                               :butter 1
+                                               :sugar 1}
+                                 :steps [[:add :all]
+                                         [:mix]
+                                         [:pour]
+                                         [:bake 30]
+                                         [:cool]]}
+                       :brownies {:ingredients {:egg 2
+                                               :flour 2
+                                               :butter 2
+                                               :cocoa 2
+                                               :sugar 1
+                                               :milk 1}
+                                  :steps [[:add :butter]
+                                          [:add :cocoa]
+                                          [:add :sugar]
+                                          [:mix]
+                                          [:add :egg]
+                                          [:add :flour]
+                                          [:add :milk]
+                                          [:mix]
+                                          [:pour]
+                                          [:cool]]}}
+             :ingredients {:egg {:storage :fridge
+                                 :usage :squeezed}
+                           :milk {:storage :fridge
+                                  :usage :scooped}
+                           :flour {:storage :pantry
+                                   :usage :scooped}
+                           :butter {:storage :fridge
+                                    :usage :simple}
+                           :sugar {:storage :pantry
+                                   :usage :scooped}
+                           :cocoa {:storage :pantry
+                                   :usage :scooped}}})
+
+(def usage {:squeezed (fn [ingredient amount]
+                        (dotimes [i amount]
+                          (grab ingredient)
+                          (squeeze)
+                          (add-to-bowl)))
+            :simple (fn [ingredient amount]
+                      (dotimes [i amount]
+                        (grab ingredient)
+                        (add-to-bowl)))
+            :scooped (fn [ingredient amount]
+                       (grab :cup)
+                       (dotimes [i amount]
+                         (scoop ingredient)
+                         (add-to-bowl))
+                       (release))})
+
 (defn error [& args]
   (apply println [args])
   :error)
-
-(defn scooped? [ingredient]
-  (cond
-   (= ingredient :milk)
-   true
-   (= ingredient :flour)
-   true
-   (= ingredient :sugar)
-   true
-   :else
-   false))
-
-(defn squeezed? [ingredient]
-  (= ingredient :egg))
-
-(defn simple? [ingredient]
-  (= ingredient :butter))
-
-(defn add-squeezed
-  ([ingredient]
-     (add-squeezed ingredient 1))
-  ([ingredient amount]
-     (if (squeezed? ingredient)
-       (dotimes [i amount]
-         (grab ingredient)
-         (squeeze)
-         (add-to-bowl))
-       (do
-         (println "This function only works on squeezed ingredients. You asked me to squeeze" ingredient)
-         :error))))
-
-(defn add-scooped
-  ([ingredient]
-     (add-scooped ingredient 1))
-  ([ingredient amount]
-     (if (scooped? ingredient)
-       (do
-         (grab :cup)
-         (dotimes [i amount]
-          (scoop ingredient)
-          (add-to-bowl))
-         (release))
-       (error "This function only works on scooped ingredients. You asked me to scoop" ingredient)
-       )))
-
-(defn add-simple
-  ([ingredient]
-     (add-simple ingredient 1))
-  ([ingredient amount]
-     (if (simple? ingredient)
-       (dotimes [i amount]
-         (grab ingredient)
-         (add-to-bowl))
-       (error "This function only works on simple ingredients. You asked me to add" ingredient)
-       )))
 
 (defn add
   ([ingredient]
      (add ingredient 1))
   ([ingredient amount]
-     (cond
-      (squeezed? ingredient)
-      (add-squeezed ingredient amount)
+   (let [u (:usage (ingredient (:ingredients baking)))
+         f (usage u)]
+     (f ingredient amount))))
 
-      (simple? ingredient)
-      (add-simple ingredient amount)
+(def actions {:add (fn
+                     ([recipe ingredient]
+                      (cond
+                        (= :all ingredient)
+                        (doseq [[ingredient amount] (:ingredients recipe)]
+                          (add ingredient amount))
+                        (contains? (:ingredients recipe) ingredient)
+                        (add ingredient (get (:ingredients recipe) ingredient))))
+                      ([recipe ingredient amount]
+                       (add ingredient amount)))
+              :mix (fn [recipe]
+                     (mix))
+              :pour (fn [recipe]
+                      (pour-into-pan))
+              :bake (fn [recipe minutes]
+                      (bake-pan minutes))
+              :cool (fn [recipe]
+                      (cool-pan))})
 
-      (scooped? ingredient)
-      (add-scooped ingredient amount)
+(defn perform [recipe step]
+  (let [f (actions (first step))]
+    (apply f recipe (rest step))))
 
-      :else
-      (error "I do not have the ingredient" ingredient)
-      )))
-
-(defn bake-cake []
-  (add :egg 2)
-  (add :flour 2)
-  (add :milk 1)
-  (add :sugar 1)
-
-  (mix)
-
-  (pour-into-pan)
-  (bake-pan 25)
-  (cool-pan))
-
-(defn bake-cookies []
-  (add :egg 1)
-  (add :flour 1)
-  (add :butter 1)
-  (add :sugar 1)
-
-  (mix)
-
-  (pour-into-pan)
-  (bake-pan 30)
-  (cool-pan))
-
-(defn bake-brownies []
-  (add :butter 2)
-  (add :sugar 1)
-  (add :cocoa 2)
-
-  (mix)
-
-  (add :egg 2)
-  (add :flour 2)
-  (add :milk 1)
-
-  (mix)
-
-  (pour-into-pan)
-  (bake-pan 35)
-  (cool-pan))
-
-(def fridge-ingredients #{:milk :egg :butter})
-
-(defn from-fridge? [ingredient]
-  (contains? fridge-ingredients ingredient))
-
-(def pantry-ingredients #{:flour :sugar :cocoa})
-
-(defn from-pantry? [ingredient]
-  (contains? pantry-ingredients ingredient))
+(defn bake-recipe [recipe]
+  (last
+   (for [step (:steps recipe)]
+     (perform recipe step))))
 
 (def scooped-ingredients #{:flour :sugar :milk :cocoa})
 
@@ -144,46 +119,6 @@
 (defn simple? [ingredient]
   (contains? simple-ingredients ingredient))
 
-(defn fetch-from-pantry
-  ([ingredient]
-   (fetch-from-pantry ingredient 1))
-  ([ingredient amount]
-   (if (from-pantry? ingredient)
-     (do
-       (go-to :pantry)
-       (dotimes [i amount]
-         (load-up ingredient))
-       (go-to :prep-area)
-       (dotimes [i amount]
-         (unload ingredient)))
-     (error "This function only works on ingredients that are stored in the pantry. You asked me to fetch" ingredient))))
-         
-(defn fetch-from-fridge
-  ([ingredient]
-   (fetch-from-fridge ingredient 1))
-  ([ingredient amount]
-   (if (from-fridge? ingredient)
-     (do
-       (go-to :fridge)
-       (dotimes [i amount]
-         (load-up ingredient))
-       (go-to :prep-area)
-       (dotimes [i amount]
-         (unload ingredient)))
-     (error "This function only works on ingredients that are stored in the fridge. You asked me to fetch" ingredient))))
-
-(defn fetch-ingredient
-  ([ingredient]
-   (fetch-ingredient ingredient 1))
-  ([ingredient amount]
-   (cond
-     (from-fridge? ingredient)
-     (fetch-from-fridge ingredient amount)
-     (from-pantry? ingredient)
-     (fetch-from-pantry ingredient amount)
-     :else
-     (error "This function only works on ingredients found in either the pantry or the fridge.  You asked me to fetch" ingredient))))
-
 (defn add-ingredients [a b]
   (merge-with + a b))
 
@@ -193,21 +128,10 @@
           [ingredient (* amount n)])))
 
 (defn order->ingredients [order]
-  (add-ingredients
-   (multiply-ingredients (:cake (:items order) 0) {:egg 2
-                                                   :flour 2
-                                                   :sugar 1
-                                                   :milk 1})
-   (multiply-ingredients (:cookies (:items order) 0) {:egg 1
-                                                      :flour 1
-                                                      :sugar 1
-                                                      :butter 1})
-   (multiply-ingredients (:brownies (:items order) 0) {:egg 2
-                                                       :flour 2
-                                                       :cocoa 2
-                                                       :sugar 1
-                                                       :butter 2
-                                                       :milk 1})))
+  (reduce add-ingredients
+          (for [[item amount] (:items order)]
+            (multiply-ingredients amount
+                                  (:ingredients (item (:recipes baking)))))))
 
 (defn orders->ingredients [orders]
   (reduce add-ingredients (map order->ingredients orders)))
@@ -220,27 +144,30 @@
   (dotimes [i amount]
     (unload ingredient)))
          
-(defn fetch-list [shopping-list]
-  (doseq [[location ingredients] {:pantry pantry-ingredients
-                                  :fridge fridge-ingredients}]
-    (go-to location)
-    (doseq [ingredient ingredients]
-      (load-up-amount ingredient (ingredient shopping-list 0))))
+(defn fetch-ingredient
+  ([ingredient]
+   (fetch-ingredient ingredient 1))
+  ([ingredient amount]
+   (go-to (:storage (ingredient (:ingrediants baking))))
+   (load-up-amount ingredient amount)
+   (go-to :prep-area)
+   (unload-amount ingredient amount)))
 
-  (go-to :prep-area)
-  (doseq [[ingredient amount] shopping-list]
-    (unload-amount ingredient amount)))
+(defn fetch-list [shopping-list]
+  (let [with-storage (for [[ingredient amount] shopping-list]
+                       {:ingredient ingredient
+                        :amount amount
+                        :storage (:storage (ingredient (:ingredients baking)))})]
+    (doseq [[location ingredients] (group-by :storage with-storage)]
+      (go-to location)
+      (doseq [ingredient ingredients]
+        (load-up-amount (:ingredient ingredient) (:amount ingredient))))
+    (go-to :prep-area)
+    (doseq [[ingredient amount] shopping-list]
+      (unload-amount ingredient amount))))
 
 (defn bake [item]
-  (cond
-    (= :cake item)
-    (bake-cake)
-    (= :cookies item)
-    (bake-cookies)
-    (= :brownies item)
-    (bake-brownies)
-    :else
-    (error "I don't know how to bake" item)))
+  (bake-recipe ((:recipes baking) item)))
 
 (defn day-at-the-bakery []
   (let [orders (get-morning-orders)
@@ -257,4 +184,4 @@
         (delivery receipt)))))
               
 (defn -main []
-  (day-at-the-bakery)(status))
+  (day-at-the-bakery))
