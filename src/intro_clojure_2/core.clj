@@ -76,6 +76,25 @@
          f (usage u)]
      (f ingredient amount))))
 
+(def actions {:add (fn
+                     ([recipe ingredient]
+                      (cond
+                        (= :all ingredient)
+                        (doseq [[ingredient amount] (:ingredients recipe)]
+                          (add ingredient amount))
+                        (contains? (:ingredients recipe) ingredient)
+                        (add ingredient (get (:ingredients recipe) ingredient))))
+                      ([recipe ingredient amount]
+                       (add ingredient amount)))
+              :mix (fn [recipe]
+                     (mix))
+              :pour (fn [recipe]
+                      (pour-into-pan))
+              :bake (fn [recipe minutes]
+                      (bake-pan minutes))
+              :cool (fn [recipe]
+                      (cool-pan))})
+
 (defn perform [recipe step]
   (cond
     (= :cool (first step))
