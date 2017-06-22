@@ -68,70 +68,13 @@
   (apply println [args])
   :error)
 
-(defn scooped? [ingredient]
-  (= :scooped (:usage (ingredient (:ingredients baking)))))
-
-(defn squeezed? [ingredient]
-  (= :squeezed (:usage (ingredient (:ingredients baking)))))
-
-(defn simple? [ingredient]
-  (= :simple (:usage (ingredient (:ingredients baking)))))
-
-(defn add-squeezed
-  ([ingredient]
-     (add-squeezed ingredient 1))
-  ([ingredient amount]
-     (if (squeezed? ingredient)
-       (dotimes [i amount]
-         (grab ingredient)
-         (squeeze)
-         (add-to-bowl))
-       (do
-         (println "This function only works on squeezed ingredients. You asked me to squeeze" ingredient)
-         :error))))
-
-(defn add-scooped
-  ([ingredient]
-     (add-scooped ingredient 1))
-  ([ingredient amount]
-     (if (scooped? ingredient)
-       (do
-         (grab :cup)
-         (dotimes [i amount]
-          (scoop ingredient)
-          (add-to-bowl))
-         (release))
-       (error "This function only works on scooped ingredients. You asked me to scoop" ingredient)
-       )))
-
-(defn add-simple
-  ([ingredient]
-     (add-simple ingredient 1))
-  ([ingredient amount]
-     (if (simple? ingredient)
-       (dotimes [i amount]
-         (grab ingredient)
-         (add-to-bowl))
-       (error "This function only works on simple ingredients. You asked me to add" ingredient)
-       )))
-
 (defn add
   ([ingredient]
      (add ingredient 1))
   ([ingredient amount]
-     (cond
-      (squeezed? ingredient)
-      (add-squeezed ingredient amount)
-
-      (simple? ingredient)
-      (add-simple ingredient amount)
-
-      (scooped? ingredient)
-      (add-scooped ingredient amount)
-
-      :else
-      (error "I do not have the ingredient" ingredient)
-      )))
+   (let [u (:usage (ingredient (:ingredients baking)))
+         f (usage u)]
+     (f ingredient amount))))
 
 (defn perform [recipe step]
   (cond
