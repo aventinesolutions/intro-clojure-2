@@ -34,7 +34,19 @@
                                           [:add :milk]
                                           [:mix]
                                           [:pour]
-                                          [:cool]]}}})
+                                          [:cool]]}}
+             :ingredients {:egg {:storage :fridge
+                                 :usage :squeezed}
+                           :milk {:storage :fridge
+                                  :usage :scooped}
+                           :flour {:storage :pantry
+                                   :usage :scooped}
+                           :butter {:storage :fridge
+                                    :usage :simple}
+                           :sugar {:storage :pantry
+                                   :usage :scooped}
+                           :cocoa {:storage :pantry
+                                   :usage :scooped}}})
 
 (defn error [& args]
   (apply println [args])
