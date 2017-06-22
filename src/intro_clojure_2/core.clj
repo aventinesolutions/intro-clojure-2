@@ -146,10 +146,6 @@
    (for [step (:steps recipe)]
      (perform recipe step))))
 
-(def fridge-ingredients #{:milk :egg :butter})
-
-(def pantry-ingredients #{:flour :sugar :cocoa})
-
 (def scooped-ingredients #{:flour :sugar :milk :cocoa})
 
 (defn scooped? [ingredient]
@@ -200,15 +196,17 @@
    (unload-amount ingredient amount)))
 
 (defn fetch-list [shopping-list]
-  (doseq [[location ingredients] {:pantry pantry-ingredients
-                                  :fridge fridge-ingredients}]
-    (go-to location)
-    (doseq [ingredient ingredients]
-      (load-up-amount ingredient (ingredient shopping-list 0))))
-
-  (go-to :prep-area)
-  (doseq [[ingredient amount] shopping-list]
-    (unload-amount ingredient amount)))
+  (let [with-storage (for [[ingredient amount] shopping-list]
+                       {:ingredient ingredient
+                        :amount amount
+                        :storage (:storage (ingredient (:ingredients baking)))})]
+    (doseq [[location ingredients] (group-by :storage with-storage)]
+      (go-to location)
+      (doseq [ingredient ingredients]
+        (load-up-amount (:ingredient ingredient) (:amount ingredient))))
+    (go-to :prep-area)
+    (doseq [[ingredient amount] shopping-list]
+      (unload-amount ingredient amount))))
 
 (defn bake [item]
   (bake-recipe ((:recipes baking) item)))
