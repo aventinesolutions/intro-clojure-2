@@ -142,47 +142,6 @@
    (for [step (:steps recipe)]
      (perform recipe step))))
 
-(defn bake-cake []
-  (add :egg 2)
-  (add :flour 2)
-  (add :milk 1)
-  (add :sugar 1)
-
-  (mix)
-
-  (pour-into-pan)
-  (bake-pan 25)
-  (cool-pan))
-
-(defn bake-cookies []
-  (add :egg 1)
-  (add :flour 1)
-  (add :butter 1)
-  (add :sugar 1)
-
-  (mix)
-
-  (pour-into-pan)
-  (bake-pan 30)
-  (cool-pan))
-
-(defn bake-brownies []
-  (add :butter 2)
-  (add :sugar 1)
-  (add :cocoa 2)
-
-  (mix)
-
-  (add :egg 2)
-  (add :flour 2)
-  (add :milk 1)
-
-  (mix)
-
-  (pour-into-pan)
-  (bake-pan 35)
-  (cool-pan))
-
 (def fridge-ingredients #{:milk :egg :butter})
 
 (defn from-fridge? [ingredient]
@@ -257,21 +216,10 @@
           [ingredient (* amount n)])))
 
 (defn order->ingredients [order]
-  (add-ingredients
-   (multiply-ingredients (:cake (:items order) 0) {:egg 2
-                                                   :flour 2
-                                                   :sugar 1
-                                                   :milk 1})
-   (multiply-ingredients (:cookies (:items order) 0) {:egg 1
-                                                      :flour 1
-                                                      :sugar 1
-                                                      :butter 1})
-   (multiply-ingredients (:brownies (:items order) 0) {:egg 2
-                                                       :flour 2
-                                                       :cocoa 2
-                                                       :sugar 1
-                                                       :butter 2
-                                                       :milk 1})))
+  (reduce add-ingredients
+          (for [[item amount] (:items order)]
+            (multiply-ingredients amount
+                                  (:ingredients (item (:recipes baking)))))))
 
 (defn orders->ingredients [orders]
   (reduce add-ingredients (map order->ingredients orders)))
